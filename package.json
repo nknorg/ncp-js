@@ -1,0 +1,37 @@
+{
+  "name": "@nkn/ncp",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "test": "jest",
+    "pb": "protoc --js_out=import_style=commonjs,binary:. src/pb/*.proto"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nknorg/ncp-js.git"
+  },
+  "author": "NKN",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/nknorg/ncp-js/issues"
+  },
+  "homepage": "https://github.com/nknorg/ncp-js#readme",
+  "description": "",
+  "dependencies": {
+    "@nodeguy/channel": "^0.6.6",
+    "core-js-pure": "^3.6.4",
+    "google-protobuf": "^3.11.2",
+    "heap": "^0.2.6",
+    "web-streams-polyfill": "^2.0.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-export-default-from": "^7.8.3",
+    "@babel/plugin-proposal-export-namespace-from": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "jest": "^25.1.0"
+  }
+}
