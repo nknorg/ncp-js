@@ -130,7 +130,7 @@ export default class Session {
     }
 
     let isEstablished = this.isEstablished;
-    if (!isEstablished && packet.getSequenceId() === 0 && packet.getAckStartSeqList().length === 0 && packet.getAckSeqCountList().length === 0) {
+    if (!isEstablished && packet.getHandshake()) {
       return this._handleHandshakePacket(packet);
     }
 
@@ -324,6 +324,7 @@ export default class Session {
 
   async _sendHandshakePacket(writeTimeout) {
     let packet = new Packet();
+    packet.setHandshake(true);
     packet.setClientIdsList(this.localClientIDs);
     packet.setWindowSize(this.recvWindowSize);
     packet.setMtu(this.recvMtu);

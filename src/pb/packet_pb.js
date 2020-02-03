@@ -78,7 +78,8 @@ proto.Packet.toObject = function(includeInstance, msg) {
     clientIdsList: jspb.Message.getRepeatedField(msg, 6),
     windowSize: jspb.Message.getFieldWithDefault(msg, 7, 0),
     mtu: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    close: jspb.Message.getFieldWithDefault(msg, 9, false)
+    close: jspb.Message.getFieldWithDefault(msg, 9, false),
+    handshake: jspb.Message.getFieldWithDefault(msg, 10, false)
   };
 
   if (includeInstance) {
@@ -150,6 +151,10 @@ proto.Packet.deserializeBinaryFromReader = function(msg, reader) {
     case 9:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setClose(value);
+      break;
+    case 10:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setHandshake(value);
       break;
     default:
       reader.skipField();
@@ -240,6 +245,13 @@ proto.Packet.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       9,
+      f
+    );
+  }
+  f = message.getHandshake();
+  if (f) {
+    writer.writeBool(
+      10,
       f
     );
   }
@@ -455,6 +467,23 @@ proto.Packet.prototype.getClose = function() {
 /** @param {boolean} value */
 proto.Packet.prototype.setClose = function(value) {
   jspb.Message.setProto3BooleanField(this, 9, value);
+};
+
+
+/**
+ * optional bool handshake = 10;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.Packet.prototype.getHandshake = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 10, false));
+};
+
+
+/** @param {boolean} value */
+proto.Packet.prototype.setHandshake = function(value) {
+  jspb.Message.setProto3BooleanField(this, 10, value);
 };
 
 
