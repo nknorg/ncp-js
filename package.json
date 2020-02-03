@@ -1,6 +1,6 @@
 {
   "name": "@nkn/ncp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "lib/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
@@ -22,8 +22,7 @@
     "@nodeguy/channel": "^0.6.6",
     "core-js-pure": "^3.6.4",
     "google-protobuf": "^3.11.2",
-    "heap": "^0.2.6",
-    "web-streams-polyfill": "^2.0.6"
+    "heap": "^0.2.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.3",

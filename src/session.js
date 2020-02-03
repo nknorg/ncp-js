@@ -2,7 +2,6 @@
 
 import Channel from './channel';
 import Promise from 'core-js-pure/features/promise';
-import { ReadableStream, WritableStream } from 'web-streams-polyfill/ponyfill/es6';
 
 import Connection from './connection';
 import Context, * as context from './context';
@@ -695,6 +694,7 @@ export default class Session {
 
   getReadableStream() {
     if (!this.readableStream) {
+      let ReadableStream = this.ReadableStream || ReadableStream;
       this.readableStream = new ReadableStream({
         start: (controller) => {
           this.context.done.shift().then(() => controller.close());
@@ -712,6 +712,7 @@ export default class Session {
 
   getWritableStream() {
     if (!this.writableStream) {
+      let WritableStream = this.WritableStream || WritableStream;
       this.writableStream = new WritableStream({
         write: (data, controller) => {
           if (this.isClosed) {
