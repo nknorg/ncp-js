@@ -45,8 +45,10 @@ export default class Session {
 	bytesReadSentTime;
   bytesReadUpdateTime;
 	remoteBytesRead;
-  readableStream;
-  writableStream;
+  ReadableStream;
+  _readableStream;
+  WritableStream;
+  _writableStream;
 
   constructor(localAddr, remoteAddr, localClientIDs, remoteClientIDs, sendWith, config={}) {
     this.config = Object.assign({}, consts.defaultConfig, config);
@@ -71,8 +73,10 @@ export default class Session {
     this.onAccept = new Channel(1);
     this.context = Context.withCancel();
     this.setTimeout(0);
-    this.readableStream = null;
-    this.writableStream = null;
+    this.ReadableStream = null;
+    this._readableStream = null;
+    this.WritableStream = null;
+    this._writableStream = null;
   }
 
   isStream() {
@@ -693,9 +697,9 @@ export default class Session {
   }
 
   getReadableStream() {
-    if (!this.readableStream) {
-      let ReadableStream = this.ReadableStream || ReadableStream;
-      this.readableStream = new ReadableStream({
+    if (!this._readableStream) {
+      let _ReadableStream = this.ReadableStream || ReadableStream;
+      this._readableStream = new _ReadableStream({
         start: (controller) => {
           this.context.done.shift().then(() => controller.close());
         },
@@ -707,13 +711,13 @@ export default class Session {
         },
       });
     }
-    return this.readableStream;
+    return this._readableStream;
   }
 
   getWritableStream() {
-    if (!this.writableStream) {
-      let WritableStream = this.WritableStream || WritableStream;
-      this.writableStream = new WritableStream({
+    if (!this._writableStream) {
+      let _WritableStream = this.WritableStream || WritableStream;
+      this._writableStream = new _WritableStream({
         write: (data, controller) => {
           if (this.isClosed) {
             return controller.error(new errors.SessionClosedError());
@@ -729,6 +733,6 @@ export default class Session {
         },
       });
     }
-    return this.writableStream;
+    return this._writableStream;
   }
 }

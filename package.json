@@ -1,6 +1,6 @@
 {
   "name": "@nkn/ncp",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "main": "lib/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
