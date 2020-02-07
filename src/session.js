@@ -280,7 +280,7 @@ export default class Session {
         await Promise.any(promises);
         this.bytesReadSentTime = Date.now();
       } catch (e) {
-        console.log(e);
+        console.log(e.errors);
         await util.sleep(1000);
         continue;
       }
@@ -356,7 +356,11 @@ export default class Session {
       });
     }
 
-    await Promise.any(promises);
+    try {
+      await Promise.any(promises);
+    } catch (e) {
+      throw e.errors;
+    }
   }
 
   _handleHandshakePacket(packet) {
@@ -424,7 +428,11 @@ export default class Session {
       ));
     }
 
-    await Promise.any(promises);
+    try {
+      await Promise.any(promises);
+    } catch (e) {
+      throw e.errors;
+    }
   }
 
   _handleClosePacket() {
