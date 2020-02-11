@@ -79,43 +79,60 @@ class SessionTest {
     console.log(session.localAddr, 'finished sending', numBytes, 'bytes', numBytes / (1<<20) / (Date.now() - timeStart) * 1000, 'MB/s');
   }
 
+  testCreate = async () => {
+    let clientIDs = [''];
+    for (var i = 0; i < this.config.numClients-1; i++) {
+      clientIDs[i] = i + '';
+    }
+    this.alice = new ncp.Session('alice', 'bob', clientIDs, null, async (senderClientID, receiverClientID, buf) => {
+      this.mockReceive(this.bob, receiverClientID, senderClientID, buf);
+    }, this.config.sessionConfig);
+    this.bob = new ncp.Session('bob', 'alice', clientIDs, null, async (senderClientID, receiverClientID, buf) => {
+      this.mockReceive(this.alice, receiverClientID, senderClientID, buf);
+    }, this.config.sessionConfig);
+    expect(this.alice.localAddr).toBe('alice');
+    expect(this.alice.remoteAddr).toBe('bob');
+    expect(this.bob.localAddr).toBe('bob');
+    expect(this.bob.remoteAddr).toBe('alice');
+  }
+
+  testDial = async () => {
+    let promises = [this.dial(this.alice), this.accept(this.bob)];
+    let r = await Promise.all(promises);
+    expect(r.length).toStrictEqual(promises.length);
+  }
+
+  testSend = async () => {
+    let promises = [this.write(this.alice, this.config.numBytes), this.read(this.bob), this.write(this.bob, this.config.numBytes), this.read(this.alice)];
+    let r = await Promise.all(promises);
+    expect(r.length).toStrictEqual(promises.length);
+  }
+
+  testClose = async () => {
+    expect(await this.alice.close()).toBe(undefined);
+    await ncp.util.sleep(2 * this.config.maxLatency + 100);
+    expect(this.bob.isClosed).toBe(true);
+  }
+
   run() {
     console.log('Testing ' + this.name + '...');
+    test(`[${this.name}] create`, this.testCreate);
+    test(`[${this.name}] dial`, this.testDial);
+    test(`[${this.name}] send`, this.testSend);
+    test(`[${this.name}] close`, this.testClose);
+  }
+}
 
-    test(`[${this.name}] create`, async () => {
-      let clientIDs = [''];
-      for (var i = 0; i < this.config.numClients-1; i++) {
-        clientIDs[i] = i + '';
-      }
-      this.alice = new ncp.Session('alice', 'bob', clientIDs, null, async (senderClientID, receiverClientID, buf) => {
-        this.mockReceive(this.bob, receiverClientID, senderClientID, buf);
-      }, this.config.sessionConfig);
-      this.bob = new ncp.Session('bob', 'alice', clientIDs, null, async (senderClientID, receiverClientID, buf) => {
-        this.mockReceive(this.alice, receiverClientID, senderClientID, buf);
-      }, this.config.sessionConfig);
-      expect(this.alice.localAddr).toBe('alice');
-      expect(this.alice.remoteAddr).toBe('bob');
-      expect(this.bob.localAddr).toBe('bob');
-      expect(this.bob.remoteAddr).toBe('alice');
-    });
+class LingerTest extends SessionTest {
+  testSend = async () => {
+    let promises = [this.write(this.alice, this.config.numBytes).then(() => this.alice.close()), this.read(this.bob)];
+    let r = await Promise.all(promises);
+    expect(r.length).toStrictEqual(promises.length);
+  }
 
-    test(`[${this.name}] dial`, async () => {
-      let promises = [this.dial(this.alice), this.accept(this.bob)];
-      let r = await Promise.all(promises);
-      expect(r.length).toStrictEqual(promises.length);
-    });
-
-    test(`[${this.name}] send`, async () => {
-      let promises = [this.write(this.alice, this.config.numBytes), this.read(this.bob), this.write(this.bob, this.config.numBytes), this.read(this.alice)];
-      let r = await Promise.all(promises);
-      expect(r.length).toStrictEqual(promises.length);
-    });
-
-    test(`[${this.name}] close`, async () => {
-      expect(await this.alice.close()).toBe(undefined);
-      await ncp.util.sleep(2 * this.config.maxLatency + 100);
-      expect(this.bob.isClosed).toBe(true);
-    });
+  testClose = async () => {
+    await ncp.util.sleep(2 * this.config.maxLatency + 100);
+    expect(this.bob.isClosed).toBe(true);
   }
 }
 
@@ -192,4 +209,14 @@ new SessionTest('non stream', {
   maxLatency: 200,
   loss: 0.01,
   sessionConfig: { nonStream: true },
+}).run();
+
+new LingerTest('linger', {
+  numClients: 4,
+  numBytes: 1 << 20,
+  writeChunkSize: 1024,
+  minLatency: 100,
+  maxLatency: 200,
+  loss: 0.01,
+  sessionConfig: { sessionWindowSize: 1 << 20, linger: -1 },
 }).run();

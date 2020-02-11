@@ -436,8 +436,10 @@ export default class Session {
   }
 
   _handleClosePacket() {
+    this.readContext.cancel();
+    this.writeContext.cancel();
+    this.context.cancel();
     this.isClosed = true;
-    this._close();
   }
 
   async dial(dialTimeout) {
@@ -641,14 +643,9 @@ export default class Session {
     }
   }
 
-  _close() {
-    this.context.cancel();
+  async close() {
     this.readContext.cancel();
     this.writeContext.cancel();
-  }
-
-  async close() {
-    this.isClosed = true;
 
     let timeout = new Channel();
     if (this.config.linger > 0) {
@@ -684,7 +681,8 @@ export default class Session {
       console.log(e);
     }
 
-    this._close();
+    this.context.cancel();
+    this.isClosed = true;
   }
 
   setTimeout(timeout) {
@@ -722,24 +720,28 @@ export default class Session {
     return this._readableStream;
   }
 
-  getWritableStream() {
+  getWritableStream(closeSessionOnEnd = false) {
     if (!this._writableStream) {
       let _WritableStream = this.WritableStream || WritableStream;
-      this._writableStream = new _WritableStream({
+      let sink = {
         write: (data, controller) => {
           if (this.isClosed) {
             return controller.error(new errors.SessionClosedError());
           }
           return this.write(data);
         },
-        close: (controller) => {
+      };
+      if (closeSessionOnEnd) {
+        sink.close = (controller) => {
           return this.close();
-        },
-        abort: (reason) => {
+        };
+        sink.abort = (reason) => {
+          console.log('Abort stream:', reason);
           this.setLinger(0);
           return this.close();
-        },
-      });
+        }
+      }
+      this._writableStream = new _WritableStream(sink);
     }
     return this._writableStream;
   }
