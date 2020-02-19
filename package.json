@@ -2,8 +2,12 @@
   "name": "@nkn/ncp",
   "version": "1.0.6",
   "main": "lib/index.js",
+  "exports": {
+    "./": "./lib/"
+  },
   "scripts": {
     "build": "babel src --out-dir lib",
+    "prepublish": "npm run-script build",
     "test": "jest",
     "pb": "protoc --js_out=import_style=commonjs,binary:. src/pb/*.proto"
   },
