@@ -28,18 +28,18 @@ export function seqInBetween(startSeq, endSeq, targetSeq) {
 
 export function compareSeq(seq1, seq2) {
   if (seq1 === seq2) {
-		return 0;
-	}
-	if (seq1 < seq2) {
-		if (seq2 - seq1 < maxUint32 / 2) {
-			return -1;
-		}
-		return 1;
-	}
-	if (seq1 - seq2 < maxUint32 / 2) {
-		return 1;
-	}
-	return -1;
+    return 0;
+  }
+  if (seq1 < seq2) {
+    if (seq2 - seq1 < maxUint32 / 2) {
+      return -1;
+    }
+    return 1;
+  }
+  if (seq1 - seq2 < maxUint32 / 2) {
+    return 1;
+  }
+  return -1;
 };
 
 export function connKey(localClientID, remoteClientID) {
