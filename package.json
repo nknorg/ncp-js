@@ -1,8 +1,9 @@
 {
   "name": "@nkn/ncp",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "lib/index.js",
   "exports": {
+    ".": "./lib/index.js",
     "./": "./lib/"
   },
   "scripts": {
@@ -29,12 +30,12 @@
     "setimmediate": "^1.0.5"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.3",
-    "@babel/core": "^7.8.3",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-proposal-export-default-from": "^7.8.3",
-    "@babel/plugin-proposal-export-namespace-from": "^7.8.3",
-    "@babel/preset-env": "^7.8.3",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.5",
+    "@babel/plugin-proposal-class-properties": "^7.16.5",
+    "@babel/plugin-proposal-export-default-from": "^7.16.5",
+    "@babel/plugin-proposal-export-namespace-from": "^7.16.5",
+    "@babel/preset-env": "^7.16.5",
     "jest": "^25.1.0"
   }
 }
