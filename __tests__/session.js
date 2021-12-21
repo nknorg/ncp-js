@@ -140,8 +140,8 @@ new SessionTest('simple', {
   numClients: 4,
   numBytes: 8 << 20,
   writeChunkSize: 1024,
-  minLatency: 0,
-  maxLatency: 0,
+  minLatency: 10,
+  maxLatency: 10,
   loss: 0,
 }).run();
 
@@ -149,8 +149,8 @@ new SessionTest('single client', {
   numClients: 1,
   numBytes: 8 << 20,
   writeChunkSize: 1024,
-  minLatency: 0,
-  maxLatency: 0,
+  minLatency: 10,
+  maxLatency: 10,
   loss: 0,
 }).run();
 

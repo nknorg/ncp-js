@@ -1,6 +1,6 @@
 {
   "name": "@nkn/ncp",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "main": "lib/index.js",
   "exports": {
     "./": "./lib/"
@@ -23,7 +23,6 @@
   "homepage": "https://github.com/nknorg/ncp-js#readme",
   "description": "",
   "dependencies": {
-    "@nodeguy/channel": "^0.6.6",
     "core-js-pure": "^3.6.4",
     "google-protobuf": "^3.11.2",
     "heap": "^0.2.6"
