@@ -4,8 +4,6 @@ export const defaultConfig = {
   nonStream:                    false,
   sessionWindowSize:            4 << 20,
   mtu:                          1024,
-  initialConnectionWindowSize:  16,
-  maxConnectionWindowSize:      256,
   minConnectionWindowSize:      1,
   maxAckSeqListSize:            32,
   flushInterval:                10,

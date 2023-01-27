@@ -1,10 +1,10 @@
 'use strict';
 
-import Channel from './channel';
 import Heap from 'heap';
+import Channel from './channel';
 
-import { Packet } from './pb/packet_pb';
 import * as errors from './errors';
+import { Packet } from './pb/packet_pb';
 import * as util from './util';
 
 export default class Connection {
@@ -18,11 +18,11 @@ export default class Connection {
   sendAckQueue
   retransmissionTimeout;
 
-  constructor(session, localClientID, remoteClientID) {
+  constructor(session, localClientID, remoteClientID, initialWindowSize) {
     this.session = session;
     this.localClientID = localClientID;
     this.remoteClientID = remoteClientID;
-    this.windowSize = session.config.initialConnectionWindowSize;
+    this.windowSize = initialWindowSize;
     this.retransmissionTimeout = session.config.initialRetransmissionTimeout;
     this.sendWindowUpdate = new Channel(1);
     this.timeSentSeq = new Map();
@@ -48,10 +48,7 @@ export default class Connection {
     }
 
     if (!this.resentSeq.has(sequenceID)) {
-      this.windowSize++;
-      if (this.windowSize > this.session.config.maxConnectionWindowSize) {
-        this.windowSize = this.session.config.maxConnectionWindowSize
-      }
+      this.setWindowSize(this.windowSize + 1);
     }
 
     if (isSentByMe) {
@@ -123,6 +120,10 @@ export default class Connection {
           throw new errors.SessionClosedError();
         }
         console.log(e);
+
+        this.setWindowSize(this.windowSize / 2);
+        this.session.updateConnWindowSize();
+      
         switch (await Channel.select([this.session.resendChan.push(seq), this.session.context.done.shift()])) {
           case this.session.resendChan:
             seq = 0;
@@ -212,31 +213,33 @@ export default class Connection {
       }
 
       let threshold = Date.now() - this.retransmissionTimeout;
+      let newResend = false;
       for (let [seq, t] of this.timeSentSeq) {
         if (this.resentSeq.has(seq)) {
           continue;
         }
         if (t < threshold) {
-          await this.session.resendChan.push(seq);
-          this.resentSeq.set(seq, null);
-          this.windowSize /= 2;
-          if (this.windowSize < this.session.config.minConnectionWindowSize) {
-            this.windowSize = this.session.config.minConnectionWindowSize;
-          }
-
           switch (await Channel.select([this.session.resendChan.push(seq), this.session.context.done.shift()])) {
             case this.session.resendChan:
               this.resentSeq.set(seq, null);
-              this.windowSize /= 2;
-              if (this.windowSize < this.session.config.minConnectionWindowSize) {
-                this.windowSize = this.session.config.minConnectionWindowSize;
-              }
+              this.setWindowSize(this.windowSize / 2);
+              newResend = true
               break;
             case this.session.context.done:
               throw this.session.context.err;
           }
         }
       }
+      if (newResend) {
+        this.session.updateConnWindowSize();
+      }
     }
+  }
+
+  setWindowSize(n) {
+    if (n < this.session.config.MinConnectionWindowSize) {
+      n = this.session.config.MinConnectionWindowSize;
+    }
+    this.windowSize = n;
   }
 }
