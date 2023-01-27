@@ -1,13 +1,13 @@
 'use strict';
 
-import Channel from './channel';
 import Promise from 'core-js-pure/features/promise';
+import Channel from './channel';
 
 import Connection from './connection';
-import Context, * as context from './context';
-import { Packet } from './pb/packet_pb';
 import * as consts from './consts';
+import Context, * as context from './context';
 import * as errors from './errors';
+import { Packet } from './pb/packet_pb';
 import * as util from './util';
 
 export default class Session {
@@ -49,6 +49,7 @@ export default class Session {
   _readableStream;
   WritableStream;
   _writableStream;
+  sendWindowPacketCount;
 
   constructor(localAddr, remoteAddr, localClientIDs, remoteClientIDs, sendWith, config={}) {
     this.config = Object.assign({}, consts.defaultConfig, config);
@@ -77,6 +78,7 @@ export default class Session {
     this._readableStream = null;
     this.WritableStream = null;
     this._writableStream = null;
+    this.sendWindowPacketCount = this.sendWindowSize / this.sendMtu;
   }
 
   isStream() {
@@ -186,6 +188,7 @@ export default class Session {
           }
         }
       }
+      this.updateConnWindowSize();
     }
 
     if (isEstablished && packet.getBytesRead() > this.remoteBytesRead) {
@@ -381,6 +384,7 @@ export default class Session {
     if (packet.getMtu() < this.sendMtu) {
       this.sendMtu = packet.getMtu();
     }
+    this.sendWindowPacketCount = this.sendWindowSize / this.sendMtu;
 
     if (packet.getClientIdsList().length === 0) {
       throw new errors.InvalidPacketError('ClientIDs is empty');
@@ -390,16 +394,17 @@ export default class Session {
       n = packet.getClientIdsList().length;
     }
 
+    let initialWindowSize = this.sendWindowPacketCount / n;
     let connections = new Map();
     for (let i = 0; i < n; i++) {
-      let conn = new Connection(this, this.localClientIDs[i], packet.getClientIdsList()[i]);
+      let conn = new Connection(this, this.localClientIDs[i], packet.getClientIdsList()[i], initialWindowSize);
       connections.set(util.connKey(conn.localClientID, conn.remoteClientID), conn);
     }
     this.connections = connections;
 
     this.remoteClientIDs = packet.getClientIdsList();
     this.sendChan = new Channel();
-    this.resendChan = new Channel(this.config.maxConnectionWindowSize * n);
+    this.resendChan = new Channel(this.sendWindowPacketCount + n);
     this.sendWindowUpdate = new Channel(1);
     this.recvDataUpdate = new Channel(1);
     this.sendBuffer = new Uint8Array(0);
@@ -744,5 +749,20 @@ export default class Session {
       this._writableStream = new _WritableStream(sink);
     }
     return this._writableStream;
+  }
+
+  updateConnWindowSize() {
+    let totalSize = 0.0;
+    for (let conn of this.connections.values()) {
+      totalSize += conn.windowSize;
+    }
+    if (totalSize <= 0) {
+      return;
+    }
+  
+    for (let conn of this.connections.values()) {
+      let n = this.sendWindowPacketCount * (conn.windowSize / totalSize);
+      conn.setWindowSize(n);
+    }
   }
 }
