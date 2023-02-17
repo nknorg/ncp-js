@@ -109,3 +109,13 @@ export class DialTimeoutError extends Error {
     this.name = 'DialTimeoutError';
   }
 }
+
+export class ConnNotFoundError extends Error {
+  constructor(message = 'Connection not found', ...params) {
+    super(message, ...params);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ConnNotFoundError);
+    }
+    this.name = 'ConnNotFoundError';
+  }
+}
