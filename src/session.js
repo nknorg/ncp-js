@@ -219,6 +219,8 @@ export default class Session {
       let conn = this.connections.get(util.connKey(localClientID, remoteClientID));
       if (conn) {
         conn.sendAck(packet.getSequenceId());
+      } else {
+        throw new errors.ConnNotFoundError('Connection ' + util.connKey(localClientID, remoteClientID) + ' not found.');
       }
     }
   }
