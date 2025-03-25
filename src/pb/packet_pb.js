@@ -1,15 +1,25 @@
+// source: src/pb/packet.proto
 /**
  * @fileoverview
  * @enhanceable
+ * @suppress {missingRequire} reports error on implicit type usages.
  * @suppress {messageConventions} JS Compiler reports an error if a variable or
  *     field starts with 'MSG_' and isn't a translatable message.
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof global !== 'undefined' && global) ||
+    (typeof self !== 'undefined' && self) ||
+    (function () { return this; }).call(null) ||
+    Function('return this')();
 
 goog.exportSymbol('proto.Packet', null, global);
 /**
@@ -45,13 +55,15 @@ proto.Packet.repeatedFields_ = [3,4,6];
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
 /**
- * Creates an object representation of this proto suitable for use in Soy templates.
+ * Creates an object representation of this proto.
  * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
  * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
  * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
  * @return {!Object}
  */
 proto.Packet.prototype.toObject = function(opt_includeInstance) {
@@ -61,8 +73,8 @@ proto.Packet.prototype.toObject = function(opt_includeInstance) {
 
 /**
  * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
  * @param {!proto.Packet} msg The msg instance to transform.
  * @return {!Object}
@@ -70,16 +82,16 @@ proto.Packet.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Packet.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sequenceId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    data: msg.getData_asB64(),
-    ackStartSeqList: jspb.Message.getRepeatedField(msg, 3),
-    ackSeqCountList: jspb.Message.getRepeatedField(msg, 4),
-    bytesRead: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    clientIdsList: jspb.Message.getRepeatedField(msg, 6),
-    windowSize: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    mtu: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    close: jspb.Message.getFieldWithDefault(msg, 9, false),
-    handshake: jspb.Message.getFieldWithDefault(msg, 10, false)
+sequenceId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+data: msg.getData_asB64(),
+ackStartSeqList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
+ackSeqCountList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
+bytesRead: jspb.Message.getFieldWithDefault(msg, 5, 0),
+clientIdsList: (f = jspb.Message.getRepeatedField(msg, 6)) == null ? undefined : f,
+windowSize: jspb.Message.getFieldWithDefault(msg, 7, 0),
+mtu: jspb.Message.getFieldWithDefault(msg, 8, 0),
+close: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
+handshake: jspb.Message.getBooleanFieldWithDefault(msg, 10, false)
   };
 
   if (includeInstance) {
@@ -125,12 +137,16 @@ proto.Packet.deserializeBinaryFromReader = function(msg, reader) {
       msg.setData(value);
       break;
     case 3:
-      var value = /** @type {!Array<number>} */ (reader.readPackedUint32());
-      msg.setAckStartSeqList(value);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint32() : [reader.readUint32()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addAckStartSeq(values[i]);
+      }
       break;
     case 4:
-      var value = /** @type {!Array<number>} */ (reader.readPackedUint32());
-      msg.setAckSeqCountList(value);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint32() : [reader.readUint32()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addAckSeqCount(values[i]);
+      }
       break;
     case 5:
       var value = /** @type {number} */ (reader.readUint64());
@@ -267,9 +283,12 @@ proto.Packet.prototype.getSequenceId = function() {
 };
 
 
-/** @param {number} value */
+/**
+ * @param {number} value
+ * @return {!proto.Packet} returns this
+ */
 proto.Packet.prototype.setSequenceId = function(value) {
-  jspb.Message.setProto3IntField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -306,9 +325,12 @@ proto.Packet.prototype.getData_asU8 = function() {
 };
 
 
-/** @param {!(string|Uint8Array)} value */
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.Packet} returns this
+ */
 proto.Packet.prototype.setData = function(value) {
-  jspb.Message.setProto3BytesField(this, 2, value);
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -321,26 +343,31 @@ proto.Packet.prototype.getAckStartSeqList = function() {
 };
 
 
-/** @param {!Array<number>} value */
+/**
+ * @param {!Array<number>} value
+ * @return {!proto.Packet} returns this
+ */
 proto.Packet.prototype.setAckStartSeqList = function(value) {
-  jspb.Message.setField(this, 3, value || []);
+  return jspb.Message.setField(this, 3, value || []);
 };
 
 
 /**
  * @param {number} value
  * @param {number=} opt_index
+ * @return {!proto.Packet} returns this
  */
 proto.Packet.prototype.addAckStartSeq = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 3, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 3, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
+ * @return {!proto.Packet} returns this
  */
 proto.Packet.prototype.clearAckStartSeqList = function() {
-  this.setAckStartSeqList([]);
+  return this.setAckStartSeqList([]);
 };
 
 
@@ -353,26 +380,31 @@ proto.Packet.prototype.getAckSeqCountList = function() {
 };
 
 
-/** @param {!Array<number>} value */
+/**
+ * @param {!Array<number>} value
+ * @return {!proto.Packet} returns this
+ */
 proto.Packet.prototype.setAckSeqCountList = function(value) {
-  jspb.Message.setField(this, 4, value || []);
+  return jspb.Message.setField(this, 4, value || []);
 };
 
 
 /**
  * @param {number} value
  * @param {number=} opt_index
+ * @return {!proto.Packet} returns this
  */
 proto.Packet.prototype.addAckSeqCount = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 4, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 4, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
+ * @return {!proto.Packet} returns this
  */
 proto.Packet.prototype.clearAckSeqCountList = function() {
-  this.setAckSeqCountList([]);
+  return this.setAckSeqCountList([]);
 };
 
 
@@ -385,9 +417,12 @@ proto.Packet.prototype.getBytesRead = function() {
 };
 
 
-/** @param {number} value */
+/**
+ * @param {number} value
+ * @return {!proto.Packet} returns this
+ */
 proto.Packet.prototype.setBytesRead = function(value) {
-  jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
@@ -400,26 +435,31 @@ proto.Packet.prototype.getClientIdsList = function() {
 };
 
 
-/** @param {!Array<string>} value */
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.Packet} returns this
+ */
 proto.Packet.prototype.setClientIdsList = function(value) {
-  jspb.Message.setField(this, 6, value || []);
+  return jspb.Message.setField(this, 6, value || []);
 };
 
 
 /**
  * @param {string} value
  * @param {number=} opt_index
+ * @return {!proto.Packet} returns this
  */
 proto.Packet.prototype.addClientIds = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 6, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 6, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
+ * @return {!proto.Packet} returns this
  */
 proto.Packet.prototype.clearClientIdsList = function() {
-  this.setClientIdsList([]);
+  return this.setClientIdsList([]);
 };
 
 
@@ -432,9 +472,12 @@ proto.Packet.prototype.getWindowSize = function() {
 };
 
 
-/** @param {number} value */
+/**
+ * @param {number} value
+ * @return {!proto.Packet} returns this
+ */
 proto.Packet.prototype.setWindowSize = function(value) {
-  jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
@@ -447,43 +490,48 @@ proto.Packet.prototype.getMtu = function() {
 };
 
 
-/** @param {number} value */
+/**
+ * @param {number} value
+ * @return {!proto.Packet} returns this
+ */
 proto.Packet.prototype.setMtu = function(value) {
-  jspb.Message.setProto3IntField(this, 8, value);
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
 /**
  * optional bool close = 9;
- * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
- * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
 proto.Packet.prototype.getClose = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 9, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 9, false));
 };
 
 
-/** @param {boolean} value */
+/**
+ * @param {boolean} value
+ * @return {!proto.Packet} returns this
+ */
 proto.Packet.prototype.setClose = function(value) {
-  jspb.Message.setProto3BooleanField(this, 9, value);
+  return jspb.Message.setProto3BooleanField(this, 9, value);
 };
 
 
 /**
  * optional bool handshake = 10;
- * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
- * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
 proto.Packet.prototype.getHandshake = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 10, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
 };
 
 
-/** @param {boolean} value */
+/**
+ * @param {boolean} value
+ * @return {!proto.Packet} returns this
+ */
 proto.Packet.prototype.setHandshake = function(value) {
-  jspb.Message.setProto3BooleanField(this, 10, value);
+  return jspb.Message.setProto3BooleanField(this, 10, value);
 };
 
 
